@@ -34,35 +34,6 @@ macOS 請使用 [Python.org 的 macOS 安裝程式](https://www.python.org/downl
 Windows 已做本機圖形及回歸測試；跨平台無視窗測試結果請見 [GitHub Actions](https://github.com/Sloth0528/fly-maze/actions)。
 遠端測試與 macOS 桌面人工驗收的範圍分別記錄於 [執行指南](RUNNING.md) 與 [驗證紀錄](V2_1_VALIDATION.md)。
 
-這版已接通模型控制迴路；附帶的 120 回合試跑模型尚未學會可靠導航。
-模型使用真實連線子圖與人工感覺／動作介面，不是完整真實果蠅大腦重建。
-
----
-
-# v2.0：連續環境與模型比較
-
-**v2.0 已加入連續座標、任意角度轉向，以及 GRU／真實 FlyWire 連接組子網路的比較流程。**
-操作與設計請先讀 [V2_GUIDE.md](V2_GUIDE.md)。原本的離散格子版本與模型介面仍可使用。
-
-```powershell
-.\.venv\Scripts\python.exe -m flymaze_v2 preview --difficulty easy --seed 7
-```
-
-新版連接組模型使用隨附的成蟲實測連線子圖；感覺輸入、動作讀出和學習方法由本專案設計，
-並非完整真實果蠅大腦重建。短訓練已跑通，尚未證實可靠導航或優於 GRU。
-
----
-
-# v1：六個 Python 模組入門範本
-
-這是以導航概念設計的 AI 教學範本，不是真實果蠅神經連接組重建。
-採用 PyTorch 的感覺層、GRU 記憶、三動作輸出，以及按回合更新的 Actor–Critic。
-為了讓核心程式容易閱讀，這裡沒有實作 PPO 的 clipping、多輪更新或平行環境。
-
-## 新增：可重現的迷宮實驗環境
-
-目前已加入三種難度的隨機迷宮、每回合換圖、以身體朝向對齊且有牆壁遮擋的局部視野，
-以及不需模型的手動預覽視窗。完整規格與訓練方式見 [MAZE_DESIGN.md](MAZE_DESIGN.md)。
 
 ```powershell
 .\.venv\Scripts\python.exe preview.py --difficulty easy --seed 7
