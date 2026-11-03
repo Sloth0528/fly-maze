@@ -1,0 +1,262 @@
+{
+  "project_version": "2.1.0",
+  "test_seed": 10007,
+  "random_start": false,
+  "action_mode": "deterministic",
+  "vary_maze": false,
+  "models": [
+    {
+      "model": "models\\gru_v2_1.pt",
+      "kind": "gru",
+      "trainable_parameters": 27205,
+      "training": {
+        "seed": 21,
+        "episodes": 120,
+        "lr": 0.0003,
+        "gamma": 0.99,
+        "rollout": 64,
+        "random_start": false,
+        "algorithm": "recurrent_actor_critic_tbptt",
+        "trainable_parameters": 27205,
+        "wall_seconds": 23.076598200001172,
+        "entropy": "base Gaussian",
+        "version": "2.1.0"
+      },
+      "environment": {
+        "layout": [
+          "#######",
+          "###G###",
+          "###.###",
+          "#S....#",
+          "#######"
+        ],
+        "difficulty": null,
+        "vary_maze": false,
+        "max_steps": 160,
+        "dt": 0.1,
+        "speed": 1.5,
+        "turn_rate": 3.141592653589793,
+        "radius": 0.16,
+        "sensor_range": 4.0,
+        "goal_radius": 0.25,
+        "reward_mode": "shaped",
+        "sensor_version": "rays13-compass-v1"
+      },
+      "summary": {
+        "episodes": 5,
+        "successes": 0,
+        "success_rate": 0.0,
+        "success_wilson95": [
+          0.0,
+          0.43449149475208104
+        ],
+        "mean_steps_all": 160.0,
+        "mean_sim_seconds_all": 16.000000000000373,
+        "mean_path_length_all": 3.943797983229154,
+        "mean_collisions_all": 0.0,
+        "mean_sim_seconds_success": null,
+        "mean_path_length_success": null
+      },
+      "wall_seconds": 1.1674636999960057,
+      "episodes": [
+        {
+          "success": false,
+          "steps": 160,
+          "sim_seconds": 16.000000000000373,
+          "path_length": 3.9437979832291536,
+          "collisions": 0,
+          "reward": -1.6000000000000012,
+          "initial_pose": [
+            1.5,
+            3.5,
+            0.0
+          ],
+          "map_seed": 10007
+        },
+        {
+          "success": false,
+          "steps": 160,
+          "sim_seconds": 16.000000000000373,
+          "path_length": 3.9437979832291536,
+          "collisions": 0,
+          "reward": -1.6000000000000012,
+          "initial_pose": [
+            1.5,
+            3.5,
+            0.0
+          ],
+          "map_seed": 10007
+        },
+        {
+          "success": false,
+          "steps": 160,
+          "sim_seconds": 16.000000000000373,
+          "path_length": 3.9437979832291536,
+          "collisions": 0,
+          "reward": -1.6000000000000012,
+          "initial_pose": [
+            1.5,
+            3.5,
+            0.0
+          ],
+          "map_seed": 10007
+        },
+        {
+          "success": false,
+          "steps": 160,
+          "sim_seconds": 16.000000000000373,
+          "path_length": 3.9437979832291536,
+          "collisions": 0,
+          "reward": -1.6000000000000012,
+          "initial_pose": [
+            1.5,
+            3.5,
+            0.0
+          ],
+          "map_seed": 10007
+        },
+        {
+          "success": false,
+          "steps": 160,
+          "sim_seconds": 16.000000000000373,
+          "path_length": 3.9437979832291536,
+          "collisions": 0,
+          "reward": -1.6000000000000012,
+          "initial_pose": [
+            1.5,
+            3.5,
+            0.0
+          ],
+          "map_seed": 10007
+        }
+      ]
+    },
+    {
+      "model": "models\\connectome_v2_1.pt",
+      "kind": "connectome",
+      "trainable_parameters": 17925,
+      "training": {
+        "seed": 21,
+        "episodes": 120,
+        "lr": 0.0003,
+        "gamma": 0.99,
+        "rollout": 64,
+        "random_start": false,
+        "algorithm": "recurrent_actor_critic_tbptt",
+        "trainable_parameters": 17925,
+        "wall_seconds": 21.580508400002145,
+        "entropy": "base Gaussian",
+        "version": "2.1.0"
+      },
+      "environment": {
+        "layout": [
+          "#######",
+          "###G###",
+          "###.###",
+          "#S....#",
+          "#######"
+        ],
+        "difficulty": null,
+        "vary_maze": false,
+        "max_steps": 160,
+        "dt": 0.1,
+        "speed": 1.5,
+        "turn_rate": 3.141592653589793,
+        "radius": 0.16,
+        "sensor_range": 4.0,
+        "goal_radius": 0.25,
+        "reward_mode": "shaped",
+        "sensor_version": "rays13-compass-v1"
+      },
+      "summary": {
+        "episodes": 5,
+        "successes": 0,
+        "success_rate": 0.0,
+        "success_wilson95": [
+          0.0,
+          0.43449149475208104
+        ],
+        "mean_steps_all": 160.0,
+        "mean_sim_seconds_all": 15.999999999999625,
+        "mean_path_length_all": 0.48143187761306727,
+        "mean_collisions_all": 0.0,
+        "mean_sim_seconds_success": null,
+        "mean_path_length_success": null
+      },
+      "wall_seconds": 1.2638096999871777,
+      "episodes": [
+        {
+          "success": false,
+          "steps": 160,
+          "sim_seconds": 15.999999999999625,
+          "path_length": 0.48143187761306727,
+          "collisions": 0,
+          "reward": -1.6000000000000012,
+          "initial_pose": [
+            1.5,
+            3.5,
+            0.0
+          ],
+          "map_seed": 10007
+        },
+        {
+          "success": false,
+          "steps": 160,
+          "sim_seconds": 15.999999999999625,
+          "path_length": 0.48143187761306727,
+          "collisions": 0,
+          "reward": -1.6000000000000012,
+          "initial_pose": [
+            1.5,
+            3.5,
+            0.0
+          ],
+          "map_seed": 10007
+        },
+        {
+          "success": false,
+          "steps": 160,
+          "sim_seconds": 15.999999999999625,
+          "path_length": 0.48143187761306727,
+          "collisions": 0,
+          "reward": -1.6000000000000012,
+          "initial_pose": [
+            1.5,
+            3.5,
+            0.0
+          ],
+          "map_seed": 10007
+        },
+        {
+          "success": false,
+          "steps": 160,
+          "sim_seconds": 15.999999999999625,
+          "path_length": 0.48143187761306727,
+          "collisions": 0,
+          "reward": -1.6000000000000012,
+          "initial_pose": [
+            1.5,
+            3.5,
+            0.0
+          ],
+          "map_seed": 10007
+        },
+        {
+          "success": false,
+          "steps": 160,
+          "sim_seconds": 15.999999999999625,
+          "path_length": 0.48143187761306727,
+          "collisions": 0,
+          "reward": -1.6000000000000012,
+          "initial_pose": [
+            1.5,
+            3.5,
+            0.0
+          ],
+          "map_seed": 10007
+        }
+      ]
+    }
+  ],
+  "interpretation": "Short runs validate execution only. No claim of stable navigation or biological fidelity. Parameter counts are reported, not matched. Wilson intervals assume independent episodes; fixed-map/fixed-start deterministic repetitions are not independent trials."
+}

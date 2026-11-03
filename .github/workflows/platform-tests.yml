@@ -1,0 +1,41 @@
+name: Windows and Apple Silicon macOS
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  headless:
+    name: Headless - ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-14]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install Windows CPU dependencies
+        if: runner.os == 'Windows'
+        run: python -m pip install -r requirements.txt --index-url https://download.pytorch.org/whl/cpu
+      - name: Install macOS dependencies
+        if: runner.os == 'macOS'
+        run: python -m pip install -r requirements.txt
+      - name: Verify model and platform
+        run: python run_v2_1.py --check
+      - name: Run headless behavior and feedback tests
+        run: python -m unittest test_maze test_v2.ContinuousTests test_v2.ModelTests test_v2_1.BrainLoopTests test_platform_support -v
+      - name: Run bundled connectome controller
+        run: python run_v2_1.py --headless --max-steps 8 --report outputs/ci_brain_trace.json
+      - name: Validate macOS launcher syntax
+        if: runner.os == 'macOS'
+        run: bash -n START_V2_1.command

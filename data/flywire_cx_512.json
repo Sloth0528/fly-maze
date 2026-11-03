@@ -1,0 +1,34 @@
+{
+  "format_version": 1,
+  "dataset": "FlyWire FAFB v783 adult female",
+  "source_url": "https://storage.googleapis.com/flywire-data/codex/data/fafb/783/connections.csv.gz",
+  "source_file": "connections.csv.gz",
+  "source_sha256": "d49dd692e59e153aa3c83f5257bfc0eff51247b86d7bb183386c6d1622c70fc9",
+  "created_utc": "2026-11-03T07:19:37.505864+00:00",
+  "regions": [
+    "EB",
+    "FB",
+    "PB",
+    "NO"
+  ],
+  "selection": "top total in+out regional synapse count; numeric root-id tie break",
+  "matrix_axes": "counts[postsynaptic, presynaptic]",
+  "nodes": 512,
+  "edges": 16212,
+  "synapses": 294654,
+  "regional_source_rows": 78245,
+  "license": "CC BY-NC 4.0 (FlyWire public-release guidelines)",
+  "license_url": "https://flywire.ai/guidelines",
+  "citations": [
+    "https://doi.org/10.1038/s41586-024-07558-y",
+    "https://doi.org/10.1038/s41586-024-07686-5"
+  ],
+  "limitations": [
+    "Subset of adult brain and selected neuropils, not a full brain or nervous system",
+    "Degree/strength selection bias; omitted cells and connections",
+    "Counts are unsigned structural weights, not synaptic efficacy or neurotransmitter effects",
+    "Sensory encoder and motor readout are learned engineering interfaces",
+    "Rate-network dynamics and reinforcement learning are not biological reconstruction"
+  ],
+  "artifact_sha256": "a9cb0f58fa5ef74db14a7326e8e02b7bdaeb01d894669c5519ac6786b1c672d5"
+}
