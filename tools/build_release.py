@@ -22,6 +22,8 @@ def build(output=None):
     required = {"START_V2_1.cmd", "START_V2_1.command", "RUNNING.md", "run_v2_1.py",
                 "models/connectome_v2_1.pt", "models/gru_v2_1.pt", "data/flywire_cx_512.npz",
                 "data/flywire_cx_512.json", "data/DATA_LICENSE.md"}
+    if version == "2.1.1":
+        required |= {"models/connectome_v2_1_retrained.pt", "models/default_connectome.json", "FIX_STATIONARY.md"}
     if not required.issubset(names):
         raise ValueError(f"Git index is missing release files: {sorted(required-set(names))}")
     for name in names:

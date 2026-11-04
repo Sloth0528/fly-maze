@@ -35,7 +35,7 @@ class BrainLoopTests(unittest.TestCase):
     def test_bundled_brain_matches_measured_graph_and_version(self):
         session = self.setup_session()
         counts, ids, metadata = load_graph(ROOT/"data"/"flywire_cx_512.npz")
-        self.assertEqual(__version__, "2.1.0")
+        self.assertEqual(__version__, "2.1.1")
         self.assertEqual(session.identity["checkpoint_version"], "2.1.0")
         self.assertEqual(session.brain.kind, "connectome")
         self.assertTrue(np.array_equal(session.brain.counts.numpy(), counts))

@@ -1,6 +1,6 @@
 # Windows 與 macOS 執行方式
 
-先完整解壓縮 [v2.1.0 發行包](https://github.com/Sloth0528/fly-maze/releases/tag/v2.1.0)，
+先完整解壓縮 [v2.1.1 發行包](https://github.com/Sloth0528/fly-maze/releases/tag/v2.1.1)，
 或使用 `git clone https://github.com/Sloth0528/fly-maze.git` 取得程式與內附模型。
 不要在壓縮檔內直接啟動，也不要把另一台電腦的 `.venv` 搬過來使用。
 
@@ -11,7 +11,8 @@
 | Intel Mac／Rosetta 下的 x86_64 Python | 本發行版不支援 | `torch>=2.6` 無對應官方 macOS x86_64 wheel |
 
 本專案使用 CPU 推論／訓練，不要求 CUDA 或 MPS。下載模型後，播放不需連線。
-模型已接通自動控制，但隨附模型仍未學會可靠到達終點。
+預設引導模型已通過原始小迷宮的獨立起點測試；隨機生成或陌生迷宮尚未建立可靠表現。
+請完整保留 `models/default_connectome.json` 與其中指定的模型，才能使用已驗證的新預設。
 
 ## Windows x64
 
@@ -88,12 +89,15 @@ Windows 在下列 Python 指令前使用 `& ".\.venv\Scripts\python.exe"`；Mac 
 | 不開視窗執行 | `run_v2_1.py --headless --max-steps 80` |
 | 使用自己的模型 | `run_v2_1.py --model outputs/my_connectome.pt` |
 | 從頭訓練連接組模型 | `-m flymaze_v2 train --brain connectome --episodes 1000 --seed 22 --output outputs/my_connectome.pt` |
+| 建議先練習的小迷宮引導訓練 | `-m flymaze_v2 train-guided --brain connectome --updates 300 --seed 42 --max-steps 160 --output outputs/my_guided.pt` |
 
 模型與報告輸出不覆寫；重跑請換檔名。詳細模型、紀錄及評估說明見 [V2_1_GUIDE.md](V2_1_GUIDE.md)。
+原始純強化學習指令仍保留作實驗，但已觀察到 1000 回合後的轉圈退化，不能以增加回合數當作可靠解法。
+引導訓練使用訓練專用的全圖示範，播放時只有模型的局部感知；方法與限制見 [修復紀錄](FIX_STATIONARY.md)。
 
 ## 驗證範圍與官方參考
 
-完整本機測試指令：`python -m unittest test_maze test_v2 test_v2_1 test_platform_support -v`。
+完整本機測試指令：`python -m unittest test_maze test_v2 test_v2_1 test_platform_support test_guided -v`。
 [GitHub Actions](https://github.com/Sloth0528/fly-maze/actions) 會在 Windows 與 Apple Silicon macOS 執行無視窗的感知、幾何、模型、接線及啟動測試。
 CI 不操作桌面視窗，因此 CI 成功也不等於 macOS GUI 人工驗收完成。
 

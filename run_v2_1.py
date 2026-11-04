@@ -45,7 +45,7 @@ def main(argv=None):
         platform_info = validate_platform()
         import torch
         from flymaze_v2.environment import ContinuousMaze, from_config
-        from flymaze_v2.runtime import ControlSession, load_controller
+        from flymaze_v2.runtime import ControlSession, load_controller, default_controller_path
         torch.set_num_threads(1)
         torch.manual_seed(args.seed)
         identity, brain, checkpoint = {}, None, None
@@ -55,14 +55,21 @@ def main(argv=None):
                                  seed=args.seed, max_steps=args.max_steps or 800)
         else:
             kind = "gru" if args.baseline else "connectome"
-            model = args.model if args.model else ROOT/"models"/f"{kind}_v2_1.pt"
+            model = args.model if args.model else default_controller_path(ROOT/"models", kind)
             if not model.is_file():
                 raise FileNotFoundError(f"missing brain checkpoint: {model}; extract the complete v2.1 package including models/")
             brain, checkpoint, identity = load_controller(model, expected_kind=kind)
             env = from_config(checkpoint["environment"], seed=args.seed, path=args.maze,
                               difficulty=args.difficulty, vary_maze=args.vary_maze, max_steps=args.max_steps)
-            print(f"Fly Maze {__version__}: AUTO {kind}; {brain.hidden_size} recurrent states; "
-                  f"training episodes={checkpoint['training'].get('episodes', 'unknown')}", flush=True)
+            training = checkpoint["training"]
+            progress = (f"guided updates={training.get('selected_update', '?')}/{training.get('updates', '?')}"
+                        if training.get("algorithm") == "recurrent_behavior_cloning_dagger"
+                        else f"training episodes={training.get('episodes', 'unknown')}")
+            print(f"Fly Maze {__version__}: AUTO {kind}; {brain.hidden_size} recurrent states; {progress}", flush=True)
+            print(f"Loaded model: {model.resolve()}", flush=True)
+            print(f"Training algorithm: {checkpoint['training'].get('algorithm', 'unknown')}", flush=True)
+            if checkpoint["training"].get("algorithm") == "recurrent_behavior_cloning_dagger" and (args.maze or args.difficulty):
+                print("This guided model was validated on its fixed training map; performance on new maps is unverified.", flush=True)
             print("Every motor command comes from brain.act. Playback does not train the model.", flush=True)
         if args.check:
             import numpy

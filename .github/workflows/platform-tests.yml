@@ -33,7 +33,7 @@ jobs:
       - name: Verify model and platform
         run: python run_v2_1.py --check
       - name: Run headless behavior and feedback tests
-        run: python -m unittest test_maze test_v2.ContinuousTests test_v2.ModelTests test_v2_1.BrainLoopTests test_platform_support -v
+        run: python -m unittest test_maze test_v2.ContinuousTests test_v2.ModelTests test_v2_1.BrainLoopTests test_platform_support test_guided.GuidedTests test_guided.DefaultModelTests -v
       - name: Run bundled connectome controller
         run: python run_v2_1.py --headless --max-steps 8 --report outputs/ci_brain_trace.json
       - name: Validate macOS launcher syntax
