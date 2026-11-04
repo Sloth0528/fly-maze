@@ -4,7 +4,6 @@ Every motor command comes directly from policy.act(observation, recurrent state)
 There is no runtime path planner, action override, or fallback random controller.
 """
 
-from collections import deque
 import json
 import math
 from pathlib import Path
@@ -27,23 +26,6 @@ def load_controller(path, expected_kind="connectome"):
     return brain, checkpoint, identity
 
 
-def default_controller_path(models_dir, kind="connectome"):
-    """Use only an explicitly activated, checksum-verified model, never 'newest file'."""
-    models_dir = Path(models_dir).resolve()
-    manifest = models_dir/"default_connectome.json"
-    if kind == "connectome" and manifest.is_file():
-        config = json.loads(manifest.read_text(encoding="utf-8"))
-        if config.get("format_version") != 1:
-            raise ValueError("unsupported active-model manifest")
-        target = (models_dir/config["model"]).resolve()
-        if not target.is_relative_to(models_dir) or target.suffix != ".pt":
-            raise ValueError("active model must be a .pt inside models/")
-        if sha256(target) != config.get("sha256"):
-            raise ValueError("active model checksum mismatch; refusing silent fallback")
-        return target
-    return models_dir/f"{kind}_v2_1.pt"
-
-
 class ControlSession:
     def __init__(self, env, brain, *, sample=False, identity=None, record=True):
         self.env, self.brain = env, brain
@@ -56,18 +38,12 @@ class ControlSession:
         self.frames, self.latest = [], None
         self.total_reward = 0.0
         self.start_environment = env.config()
-        self.stalled_steps = 0
-        self.recent_positions = deque(maxlen=max(10, math.ceil(3/env.dt))+1)
-        self.recent_positions.append((env.fly.x, env.fly.y))
 
     def reset(self, random_start=False):
         self.observation = self.env.reset(random_start)
         self.memory = self.brain.initial_memory()
         self.frames, self.latest, self.total_reward = [], None, 0.0
         self.start_environment = self.env.config()
-        self.stalled_steps = 0
-        self.recent_positions.clear()
-        self.recent_positions.append((self.env.fly.x, self.env.fly.y))
 
     def step(self):
         if self.env.terminated or self.env.truncated:
@@ -89,18 +65,13 @@ class ControlSession:
         next_observation, reward, terminated, truncated, info = self.env.step(action)
         self.memory, self.observation = memory, next_observation
         self.total_reward += reward
-        self.recent_positions.append((self.env.fly.x, self.env.fly.y))
-        first = self.recent_positions[0]
-        stalled = (len(self.recent_positions) == self.recent_positions.maxlen
-                   and max(math.hypot(x-first[0], y-first[1]) for x, y in self.recent_positions) < 0.15)
-        self.stalled_steps += int(stalled)
         frame = {"step": self.env.steps, "observation": observation, "pose_before": pose_before,
                  "action": list(action), "velocity": action[0]*self.env.speed,
                  "angular_velocity": action[1]*self.env.turn_rate,
                  "pose_after": [self.env.fly.x, self.env.fly.y, self.env.fly.heading],
                  "state_rms": rms, "top_nodes": top_nodes, "value": value_number,
                  "reward": reward, "collision": info["collision"], "sim_seconds": self.env.elapsed,
-                 "terminated": terminated, "truncated": truncated, "stalled": stalled}
+                 "terminated": terminated, "truncated": truncated}
         self.latest = frame
         if self.record:
             self.frames.append(frame)
@@ -120,7 +91,7 @@ class ControlSession:
                 "result": {"success": self.env.terminated, "truncated": self.env.truncated,
                            "steps": self.env.steps, "sim_seconds": self.env.elapsed,
                            "path_length": self.env.path_length, "collisions": self.env.collisions,
-                           "reward": self.total_reward, "stalled_steps": self.stalled_steps}, "frames": list(self.frames),
+                           "reward": self.total_reward}, "frames": list(self.frames),
                 "interpretation": "Abstract recurrent activity, not recorded biological spikes. "
                                   "Closed-loop execution does not establish reliable maze navigation."}
 

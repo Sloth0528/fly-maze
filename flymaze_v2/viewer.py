@@ -73,15 +73,12 @@ class Viewer:
         controls.pack(pady=6)
         tk.Button(controls, text="暫停／繼續", command=self.toggle_pause).pack(side="left", padx=4)
         tk.Button(controls, text="重新開始", command=lambda: self.press(SimpleNamespace(keysym="r"))).pack(side="left", padx=4)
-        self.next_button = tk.Button(controls, text="下一張地圖", command=lambda: self.press(SimpleNamespace(keysym="n")),
-                                     state="normal" if env.difficulty else "disabled")
-        self.next_button.pack(side="left", padx=4)
-        tk.Button(controls, text="載入模型", command=self.choose_model,
-                  state="normal" if self.session else "disabled").pack(side="left", padx=4)
+        tk.Button(controls, text="下一張地圖", command=lambda: self.press(SimpleNamespace(keysym="n")),
+                  state="normal" if env.difficulty else "disabled").pack(side="left", padx=4)
         tk.Button(controls, text="匯出模型紀錄", command=self.export_session,
                   state="normal" if self.session else "disabled").pack(side="left", padx=4)
-        self.footer = self.tk.Label(self.root)
-        self.footer.pack(pady=6)
+        self.tk.Label(self.root, text=("模型自動前進與轉向 | Space: pause | R: reset | N: next map" if brain else
+                                     "Up/W: forward | Left/A, Right/D: steer | Space: pause | R: reset | N: next map")).pack(pady=6)
         self.keys, self.paused = set(), False
         self.root.bind("<KeyPress>", self.press)
         self.root.bind("<KeyRelease>", lambda event: self.keys.discard(event.keysym.lower()))
@@ -102,31 +99,6 @@ class Viewer:
 
     def toggle_pause(self):
         self.paused = not self.paused
-
-    def replace_model(self, path):
-        from .runtime import load_controller, ControlSession
-        from .environment import from_config
-        kind = self.brain.kind if self.brain else "connectome"
-        brain, checkpoint, identity = load_controller(path, expected_kind=kind)
-        env = from_config(checkpoint["environment"], seed=self.env.seed)
-        self.brain, self.env = brain, env
-        self.session = ControlSession(env, brain, sample=self.sample, identity=identity)
-        self.cell = min(56, max(20, 800//max(env.width, env.height)))
-        self.canvas.config(width=env.width*self.cell, height=env.height*self.cell)
-        self.next_button.config(state="normal" if env.difficulty else "disabled")
-        self.paused = False
-        self.reset()
-
-    def choose_model(self):
-        from tkinter import filedialog, messagebox
-        path = filedialog.askopenfilename(parent=self.root, title="載入模型（會使用該模型的地圖並重設記憶）",
-                                         initialdir=Path(__file__).resolve().parents[1]/"models",
-                                         filetypes=[("PyTorch checkpoint", "*.pt")])
-        if path:
-            try:
-                self.replace_model(path)
-            except (OSError, ValueError, RuntimeError) as error:
-                messagebox.showerror("模型載入失敗", str(error), parent=self.root)
 
     def inspect_node(self, event):
         if self.brain is None:
@@ -157,7 +129,6 @@ class Viewer:
         if self.brain is None:
             self.brain_info.config(text="手動模式：目前沒有模型控制身體\n使用 run_v2_1.py 啟動連接組模型")
             self.motor_label.config(text="Motor source: keyboard")
-            self.footer.config(text="Up/W: forward | Left/A, Right/D: steer | Space: pause | R: reset | N: next map")
             return
         brain, session = self.brain, self.session
         if brain.kind == "connectome":
@@ -175,16 +146,12 @@ class Viewer:
         frame = session.latest
         training = session.identity.get("training", {})
         trained = training.get("episodes", "unknown")
-        training_line = (f"Guided updates: {training.get('selected_update', '?')}/{training.get('updates', '?')}"
-                         if training.get("algorithm") == "recurrent_behavior_cloning_dagger"
-                         else f"Training episodes: {trained}")
-        self.footer.config(text=f"模型：{session.identity.get('checkpoint', '未標示檔名')} | Space: pause | R: reset")
         if frame is None:
-            self.motor_label.config(text=f"Motor source: brain.act\n{training_line}\nWaiting for first brain step")
+            self.motor_label.config(text=f"Motor source: brain.act\nTraining episodes: {trained}\nWaiting for first brain step")
             self.top_label.config(text="")
         else:
             throttle, steering = frame["action"]
-            self.motor_label.config(text=f"Motor source: brain.act\n{training_line}\n"
+            self.motor_label.config(text=f"Motor source: brain.act\nTraining episodes: {trained}\n"
                                     f"throttle={throttle:.3f} steering={steering:+.3f}\n"
                                     f"speed={frame['velocity']:.3f} cells/s\n"
                                     f"turn={math.degrees(frame['angular_velocity']):+.1f} deg/s\n"
@@ -235,9 +202,7 @@ class Viewer:
         self.label.config(text=f"{state}  x={env.fly.x:.3f} y={env.fly.y:.3f} angle={math.degrees(env.fly.heading):.1f} deg\n"
                           f"steps={env.steps}/{env.max_steps} simulated time={env.elapsed:.2f}s\n"
                           f"distance={env.path_length:.3f} cells  collisions={env.collisions}  sensors=31"
-                          +(f"\n{self.last_error}" if self.last_error else "")
-                          +("\n停滯提示：近 3 秒位移很小，請確認載入的模型與訓練結果。"
-                            if self.session and self.session.latest and self.session.latest.get("stalled") else ""))
+                          +(f"\n{self.last_error}" if self.last_error else ""))
         self.draw_brain()
 
     def tick(self):

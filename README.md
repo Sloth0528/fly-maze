@@ -1,14 +1,9 @@
-# 果蠅走迷宮 v2.1.1：連接組模型自動控制
+# 果蠅走迷宮 v2.1：連接組模型自動控制
 
 預設由隨附的 FlyWire 連接組子網路模型自動控制迷宮。
 視窗右側顯示 512 個節點狀態與實際動作輸出，並可匯出完整感知／動作紀錄。
 先看 [Windows／macOS 完整安裝與執行方式](RUNNING.md)，模型操作見 [V2_1_GUIDE.md](V2_1_GUIDE.md)。
-可下載 [v2.1.1 發行包](https://github.com/Sloth0528/fly-maze/releases/tag/v2.1.1)，或複製本儲存庫。
-
-**v2.1.1 修正原地轉圈的預設模型。** 新模型經示範引導與 DAgger 訓練，
-在原始小迷宮的 200 個獨立起始條件下成功 200 次；陌生迷宮能力尚未建立。
-目前載入的模型檔名會顯示在視窗底部，也可按「載入模型」切換。
-原因、修復與完整結果見 [FIX_STATIONARY.md](FIX_STATIONARY.md)。
+可下載 [v2.1.0 發行包](https://github.com/Sloth0528/fly-maze/releases/tag/v2.1.0)，或複製本儲存庫。
 
 | 平台 | Python | 安裝後啟動 |
 |---|---|---|

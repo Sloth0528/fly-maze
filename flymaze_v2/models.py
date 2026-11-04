@@ -28,10 +28,8 @@ class Policy(nn.Module):
         return self.actor(memory), self.critic(memory).squeeze(), memory
 
     def observation_tensor(self, observation):
-        value = torch.as_tensor(observation, dtype=torch.float32, device=self.log_std.device)
-        if value.ndim == 1:
-            value = value.unsqueeze(0)
-        if value.ndim != 2 or value.shape[1] != self.observation_size:
+        value = torch.as_tensor(observation, dtype=torch.float32, device=self.log_std.device).reshape(1, -1)
+        if value.shape[1] != self.observation_size:
             raise ValueError("observation size does not match checkpoint")
         return value
 

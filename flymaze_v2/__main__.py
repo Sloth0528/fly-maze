@@ -22,8 +22,7 @@ def add_maps(parser):
 def create_env(args):
     layout = args.maze.read_text(encoding="utf-8-sig").splitlines() if args.maze else None
     return ContinuousMaze(layout, difficulty=args.difficulty, vary_maze=args.vary_maze,
-                          seed=7 if args.seed is None else args.seed,
-                          max_steps=args.max_steps or (240 if args.command == "train-guided" else 800),
+                          seed=7 if args.seed is None else args.seed, max_steps=args.max_steps or 800,
                           dt=args.dt, speed=args.speed, turn_rate=math.radians(args.turn_rate),
                           radius=args.radius, reward_mode=args.reward_mode)
 
@@ -49,23 +48,12 @@ def main(argv=None):
     train.add_argument("--rollout", type=int, default=64)
     train.add_argument("--output", type=Path, required=True)
 
-    guided = commands.add_parser("train-guided", help="fixed-map demonstration and DAgger training; teacher is training-only")
-    guided.add_argument("--brain", choices=("gru", "connectome"), default="connectome")
-    guided.add_argument("--connectome", type=Path, default=Path("data/flywire_cx_512.npz"))
-    guided.add_argument("--hidden-size", type=int, default=64)
-    guided.add_argument("--updates", type=int, default=300)
-    guided.add_argument("--demonstrations", type=int, default=48)
-    guided.add_argument("--batch-size", type=int, default=8)
-    guided.add_argument("--lr", type=float, default=0.001)
-    guided.add_argument("--validation-seed", type=int, default=20021)
-    guided.add_argument("--output", type=Path, required=True)
-
     preview = commands.add_parser("preview", help="manual continuous steering or checkpoint playback")
     preview.add_argument("--model", type=Path)
     preview.add_argument("--sample", action="store_true")
     preview.add_argument("--delay", type=float, help="display interval in seconds; simulated dt stays fixed")
 
-    for command in (train, guided, preview):
+    for command in (train, preview):
         add_maps(command)
         command.add_argument("--dt", type=float, default=0.1)
         command.add_argument("--speed", type=float, default=1.5, help="cell units per simulated second")
@@ -95,20 +83,14 @@ def main(argv=None):
         torch.manual_seed(seed)
         if args.max_steps is not None and args.max_steps < 1:
             raise ValueError("max-steps must be positive")
-        if args.command in ("train", "train-guided"):
+        if args.command == "train":
             from .models import build
             from .experiment import train as run_training
             if args.hidden_size < 1:
                 raise ValueError("hidden-size must be positive")
             brain = build(args.brain, hidden_size=args.hidden_size, connectome=args.connectome)
-            if args.command == "train-guided":
-                from .guided import train_guided
-                train_guided(create_env(args), brain, args.output, seed=seed, updates=args.updates,
-                             demonstrations=args.demonstrations, batch_size=args.batch_size,
-                             lr=args.lr, validation_seed=args.validation_seed)
-            else:
-                run_training(create_env(args), brain, args.output, episodes=args.episodes, seed=seed,
-                             lr=args.lr, gamma=args.gamma, rollout=args.rollout, random_start=args.random_start)
+            run_training(create_env(args), brain, args.output, episodes=args.episodes, seed=seed,
+                         lr=args.lr, gamma=args.gamma, rollout=args.rollout, random_start=args.random_start)
         elif args.command == "preview":
             from .models import load
             from .viewer import Viewer

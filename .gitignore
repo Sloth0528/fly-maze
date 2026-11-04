@@ -11,8 +11,6 @@ outputs/**/*.csv
 models/*.pt
 !models/connectome_v2_1.pt
 !models/gru_v2_1.pt
-!models/connectome_v2_1_retrained.pt
-models/*candidate*.csv
 .DS_Store
 ._*
 .env
